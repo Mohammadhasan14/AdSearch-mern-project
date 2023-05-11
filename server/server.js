@@ -54,15 +54,6 @@ app.post('/adsdata', async (req, res) => { // Define a route for handling POST r
     try {
       const results = await Ads.aggregate(data && [ // this line  Ads collection to perform an aggregation
         {
-          $match: { //  $match stage to filter documents that match the search keyword
-            $or: [
-              { primaryText: { $regex: data, $options: 'i' } }, 
-              { headline: { $regex: data, $options: 'i' } }, 
-              { description: { $regex: data, $options: 'i' } } 
-            ]
-          }
-        },
-        {
           $lookup: { // this $lookup stage to join the Ads and Companies collections
             from: 'companies', 
             localField: 'companyId', 
@@ -70,12 +61,27 @@ app.post('/adsdata', async (req, res) => { // Define a route for handling POST r
             as: 'ads' 
           }
         },
+        // {
+        //   $match: { //  $match stage to filter documents that match the search keyword
+        //     $or: [
+        //       { primaryText: { $regex: data, $options: 'i' } }, 
+        //       { headline: { $regex: data, $options: 'i' } }, 
+        //       { description: { $regex: data, $options: 'i' } } 
+        //     ]
+        //   }
+        // },
         {
           $unwind: '$ads' // se the $unwind stage to flatten the resulting array of matching documents from the Companies collection
         },
         {
           $match: { //  the $match stage to filter the documents based on the  keyword in the Company name field
-            'ads.name': { $regex: data, $options: 'i' }, // Mach documents where the Company name field contains the keyword 
+            $or: [
+                    { primaryText: { $regex: data, $options: 'i' } }, 
+                    { headline: { $regex: data, $options: 'i' } }, 
+                    { description: { $regex: data, $options: 'i' } },
+                    {'ads.name': { $regex: data, $options: 'i' }}, // Mach documents where the Company name field contains the keyword 
+                  ]
+            
             
           }
         },
@@ -97,7 +103,6 @@ app.post('/adsdata', async (req, res) => { // Define a route for handling POST r
     }
   });
   
-
 
 
 

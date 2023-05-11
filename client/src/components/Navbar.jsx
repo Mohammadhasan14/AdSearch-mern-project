@@ -1,6 +1,20 @@
 import React from 'react'
+import { useAuth0 } from "@auth0/auth0-react";
 
 export default function Navbar() {
+
+    const { loginWithRedirect, user, isAuthenticated, logout } = useAuth0();
+
+    function handleLogin (e){
+        e.preventDefault()
+        loginWithRedirect()
+    }
+
+    function handleLogOut (e){
+        e.preventDefault()
+        logout({ logoutParams: { returnTo: window.location.origin } })
+    }
+
     return (
 
         <nav className="navbar navbar-expand-lg bg-body-tertiary rounded mb-5" aria-label="Thirteenth navbar example">
@@ -23,10 +37,21 @@ export default function Navbar() {
                         </li>
                     </ul>
                     <div className="d-lg-flex col-lg-3 justify-content-lg-end">
-                        <button className="btn btn-primary">Sign in</button>
+                        {isAuthenticated ? (<div class="btn-group" role="group">
+                            <button type="button" class="btn me-4 dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                More
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li className='p-2'>Hi, {user.nickname}</li>
+                                <li className='p-2'><button className="btn btn-primary" onClick={handleLogOut}>Log out</button></li>
+                            </ul>
+                        </div>) : (<button className="btn btn-primary" onClick={handleLogin}>Sign in</button>)
+                        }
                     </div>
                 </div>
             </div>
         </nav>
     )
 }
+
+

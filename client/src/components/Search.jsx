@@ -10,19 +10,25 @@ export default function Search() {
 
 
     function handleSearch(event) {
+        setAdsData('')     /// this line is to empty adsdata otherwise it will post response request during change of a search keyword also
         const query = event.target.value;
         setSearchKeyword(query);
-        // console.log("query onchange ", query);
+    
+        console.log("query onchange ", query);
 
     }
 
 
-
-//////////////////////////// useEffect to send data of a search keyword to server to check if data matches ////////////////////////////////////////
-
-    useEffect(() => {
+    console.log(searchKeyword)
 
 
+    //////////////////////////// useEffect to send data of a search keyword to server to check if data matches ////////////////////////////////////////
+
+
+    function handleClick(e) {
+        e.preventDefault()
+
+        console.log(searchKeyword);
         searchKeyword && (async function getData() {
             try {
                 const data = { searchKeyword };
@@ -36,12 +42,12 @@ export default function Search() {
                 console.error(error);
             }
         })()
+    }
 
-    }, [searchKeyword])
 
     console.log("adsData", adsData)
 
-////////////////// code for search  and a matching card of a searchKeyword ///////////////////////////////
+    ////////////////// code for search  and a matching card of a searchKeyword ///////////////////////////////
 
     return (
         <>
@@ -58,7 +64,7 @@ export default function Search() {
                                     <input name="search" value={searchKeyword} onChange={handleSearch} className="form-control form-control-lg form-control-borderless" type="search" placeholder="Search company or keywords" />
                                 </div>
                                 <div className="col-auto">
-                                    <button className="btn btn-lg btn-success" type="submit">Search</button>
+                                    <button className="btn btn-lg btn-success" onClick={handleClick} type="submit">Search</button>
                                 </div>
                             </div>
                         </form>
